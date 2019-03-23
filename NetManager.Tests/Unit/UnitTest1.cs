@@ -1,17 +1,14 @@
-using NUnit.Framework;
+using NetManager.Domain;
+using Xunit;
 
 namespace NetManager.Tests.Unit {
 
-	public class Tests {
-		[SetUp]
-		public void Setup() {
+	public class UnitTest1 {
+		[Fact]
+		public void Test1() {
+			var c = new Class1();
+			Assert.Equal( "123456", c.TestMethod() );
 		}
-
-		[Test]
-		public void When_Test_Pass() {
-			Assert.Pass();
-		}
-
-
 	}
+
 }

@@ -1,17 +1,29 @@
 version: 1.0.{build}
-
+image: Visual Studio 2017 Preview
 skip_branch_with_pr: true
-image: Visual Studio 2017
-
+skip_tags: true
 clone_folder: C:\Projects\NetworkAdapterManager\
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: 5YPM2EiJThtN8Vyn9ZWoHn69pa4/P3dMHvZp2nBw0e2uWHf89/7ui/rk/8HsXtq5
+build_script:
+  - dotnet build -c Release
+test_script:
+- ps: >-
+    nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
+    
+    nuget install OpenCover -OutputDirectory packages -Version 4.7.922
+    
+    dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
+    
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""C:\Projects\NetworkAdapterManager\NetManager.Tests\bin\Release\netcoreapp2.1\NetManager.Tests.dll"" " -oldStyle -output:C:\Projects\NetworkAdapterManager\opencoverCoverage.xml
+    
+    $coveralls = ".\tools\csmacnz.coveralls.exe"
+    
+    & $coveralls --opencover -i C:\Projects\NetworkAdapterManager\opencoverCoverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
 
-configuration: Release
-platform: Any CPU
-
-before_build:
-  - cd C:\Projects\NetworkAdapterManager\
-  - nuget restore
-
-build:
-  project:  C:\Projects\NetworkAdapterManager\NetworkAdapterManager.sln
-  verbosity: minimal
