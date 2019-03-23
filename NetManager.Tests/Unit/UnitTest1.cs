@@ -1,3 +1,4 @@
+using NetManager.Domain;
 using NUnit.Framework;
 
 namespace NetManager.Tests.Unit {
@@ -9,7 +10,8 @@ namespace NetManager.Tests.Unit {
 
 		[Test]
 		public void When_Test_Pass() {
-			Assert.Pass();
+			var c = new Class1();
+			Assert.AreEqual("123456",c.TestMethod());
 		}
 
 		[Test]
