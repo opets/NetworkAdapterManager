@@ -3,11 +3,11 @@ version: 1.0.{build}
 skip_branch_with_pr: true
 image: Visual Studio 2017
 
-clone_folder: C:\Projects\NetworkAdapterManager
+clone_folder: C:\Projects\NetworkAdapterManager\
 
 configuration: Release
 platform: Any CPU
 
 build:
-  project: c:\projects\Converters\Converter\D2L.CommonCartridge.CPC.sln
+  project:  C:\Projects\NetworkAdapterManager\NetworkAdapterManager.sln
   verbosity: minimal
