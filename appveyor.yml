@@ -1,25 +1,18 @@
 version: 1.0.{build}
 image: Visual Studio 2017 Preview
 skip_branch_with_pr: true
-
+skip_tags: true
+clone_folder: C:\Projects\NetworkAdapterManager\
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
   version: '{version}'
   package_version: '{version}'
-  
-clone_folder: C:\Projects\NetworkAdapterManager\
 environment:
   COVERALLS_REPO_TOKEN:
     secure: 5YPM2EiJThtN8Vyn9ZWoHn69pa4/P3dMHvZp2nBw0e2uWHf89/7ui/rk/8HsXtq5
-    
-before_build:
-  - cd C:\Projects\NetworkAdapterManager\
-  - nuget restore
-
 build_script:
   - dotnet build -c Release
-
 test_script:
 - ps: >-
     nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
@@ -28,7 +21,7 @@ test_script:
     
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""NetManager.Tests\bin\Release\netcoreapp2.1\NetManager.Tests.dll "" -appveyor" -filter:"+[NetManager*]*" -oldStyle -output:C:\Projects\NetworkAdapterManager\opencoverCoverage.xml
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""NetworkAdapterManager\NetManager.Tests\bin\Debug\netcoreapp2.1\NetManager.Tests.dll"" " -oldStyle -output:C:\Projects\NetworkAdapterManager\opencoverCoverage.xml
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
