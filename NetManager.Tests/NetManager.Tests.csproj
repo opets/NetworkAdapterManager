@@ -15,6 +15,7 @@
   <ItemGroup>
     <Folder Include="Integration\" />
     <Folder Include="Load\" />
+    <Folder Include="Unit\" />
   </ItemGroup>
 
   <ItemGroup>
