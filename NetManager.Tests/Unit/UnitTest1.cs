@@ -14,11 +14,6 @@ namespace NetManager.Tests.Unit {
 			Assert.AreEqual("123456",c.TestMethod());
 		}
 
-		[Test]
-		public void When_Test_Fail() {
-			Assert.Fail();
-		}
-
 
 	}
 }

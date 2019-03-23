@@ -8,6 +8,10 @@ clone_folder: C:\Projects\NetworkAdapterManager\
 configuration: Release
 platform: Any CPU
 
+before_build:
+  - cd C:\Projects\NetworkAdapterManager\
+  - nuget restore
+
 build:
   project:  C:\Projects\NetworkAdapterManager\NetworkAdapterManager.sln
   verbosity: minimal
