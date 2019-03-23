@@ -2,15 +2,24 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-  </PropertyGroup>
+	<RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+	<SelfContained>false</SelfContained>
+	<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>  </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Utils\CustomWebHostService.cs" />
+    <Compile Remove="Utils\WebHostServiceExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utils\" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
   </ItemGroup>
 

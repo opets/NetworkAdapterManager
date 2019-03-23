@@ -1,22 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
 
 namespace NetManager.Api {
 	public class Program {
 		public static void Main( string[] args ) {
-			BuildWebHost( args ).Run();
+			var isService = !( Debugger.IsAttached || args.Contains( "--console" ) );
+
+			var builder = BuildWebHost( args.Where( arg => arg != "--console" ).ToArray() );
+
+			if( isService ) {
+				var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+				var pathToContentRoot = Path.GetDirectoryName( pathToExe );
+				builder.UseContentRoot( pathToContentRoot );
+			}
+
+			IWebHost host = builder.Build();
+
+			if( isService ) {
+				host.RunAsService();
+			} else {
+				host.Run();
+			}			
 		}
 
-		public static IWebHost BuildWebHost( string[] args ) =>
+		public static IWebHostBuilder BuildWebHost( string[] args ) =>
 			WebHost.CreateDefaultBuilder( args )
-				.UseStartup<Startup>()
-				.Build();
+				//.ConfigureLogging( ( hostingContext, logging ) =>
+				//{
+				//	logging.AddEventLog();
+				//} )
+				.ConfigureAppConfiguration( ( context, config ) => {
+					// Configure the app here.
+				} )
+				.UseStartup<Startup>();
 	}
 }
