@@ -17,4 +17,9 @@
     <Folder Include="Load\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NetManager.Api\NetManager.Api.csproj" />
+    <ProjectReference Include="..\NetManager.Domain\NetManager.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
