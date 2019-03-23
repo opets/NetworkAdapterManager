@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetManager.Api", "NetManager.Api\NetManager.Api.csproj", "{1067CE45-BD0C-407C-A8B3-B093774B1EAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetManager.Api", "NetManager.Api\NetManager.Api.csproj", "{1067CE45-BD0C-407C-A8B3-B093774B1EAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetManager.Domain", "NetManager.Domain\NetManager.Domain.csproj", "{4856F925-DF8A-466E-B3F3-3716470A57DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetManager.Domain", "NetManager.Domain\NetManager.Domain.csproj", "{4856F925-DF8A-466E-B3F3-3716470A57DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetManager.Tests", "NetManager.Tests\NetManager.Tests.csproj", "{15F5530B-3FF4-4B57-8AE5-DAC038078BED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetManager.Tests", "NetManager.Tests\NetManager.Tests.csproj", "{D038DFD8-C70E-4F3F-930E-4F48B434B038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{4856F925-DF8A-466E-B3F3-3716470A57DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4856F925-DF8A-466E-B3F3-3716470A57DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4856F925-DF8A-466E-B3F3-3716470A57DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15F5530B-3FF4-4B57-8AE5-DAC038078BED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15F5530B-3FF4-4B57-8AE5-DAC038078BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15F5530B-3FF4-4B57-8AE5-DAC038078BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15F5530B-3FF4-4B57-8AE5-DAC038078BED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D038DFD8-C70E-4F3F-930E-4F48B434B038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D038DFD8-C70E-4F3F-930E-4F48B434B038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D038DFD8-C70E-4F3F-930E-4F48B434B038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D038DFD8-C70E-4F3F-930E-4F48B434B038}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
