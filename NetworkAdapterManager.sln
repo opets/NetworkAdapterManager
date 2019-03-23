@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetManager.Api", "NetManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetManager.Domain", "NetManager.Domain\NetManager.Domain.csproj", "{4856F925-DF8A-466E-B3F3-3716470A57DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetManager.Tests", "NetManager.Tests\NetManager.Tests.csproj", "{D038DFD8-C70E-4F3F-930E-4F48B434B038}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetManager.Tests", "NetManager.Tests\NetManager.Tests.csproj", "{D038DFD8-C70E-4F3F-930E-4F48B434B038}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
