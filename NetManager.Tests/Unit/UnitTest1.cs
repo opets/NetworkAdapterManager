@@ -12,11 +12,6 @@ namespace NetManager.Tests.Unit {
 			Assert.Pass();
 		}
 
-		[Test]
-		public void When_Test_Fail() {
-			Assert.Fail();
-		}
-
 
 	}
 }
