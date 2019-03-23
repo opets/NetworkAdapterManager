@@ -8,7 +8,22 @@ namespace NetManager.Api.Controllers {
 		[HttpGet]
 		[Route( "[action]" )]
 		public string HealthCheck() => "ok";
+	
+		// GET api/adapter/list
+		[HttpGet( "list" )]
+		public string[] GetAdapters() {
+			return new string[] {
+				"1", "2"
+			};
+		}
 
+		// GET api/adapter/1
+		[HttpGet( "{id}/addresses" )]
+		public string[] GetAdapterAddresses( string adapterCode) {
+			return new string[] {
+				"127.0.0.1", "192.168.1.1"
+			};
+		}
 
 	}
 }

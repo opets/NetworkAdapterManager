@@ -25,9 +25,10 @@ namespace NetManager.Api {
 				app.UseExceptionHandler( "/Error" );
 			}
 
-		  app.UseStaticFiles();
+			app.UseStaticFiles();
 
 			app.UseMvc();
 		}
+
 	}
 }
