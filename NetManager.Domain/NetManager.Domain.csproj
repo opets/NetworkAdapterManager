@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Network" Version="6.1.0.7" />
     <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="System.Management" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

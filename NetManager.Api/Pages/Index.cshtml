@@ -14,36 +14,52 @@
     <h2>Adapters</h2>
     <div id="result"></div>
 
+    <div id="msg"></div>
+
     <script src="~/lib/jquery/dist/jquery.js"></script>
     @*<div id="spoiler">
-        <h3>Edit</h3>
-        <form class="my-form">
-            <input type="hidden" id="edit-id">
-            <input type="checkbox" id="edit-isComplete">
-            <input type="text" id="edit-name">
-            <input type="submit" value="Save">
-            <a onclick="closeInput()" aria-label="Close">&#10006;</a>
-        </form>
-    </div>*@
+            <h3>Edit</h3>
+            <form class="my-form">
+                <input type="hidden" id="edit-id">
+                <input type="checkbox" id="edit-isComplete">
+                <input type="text" id="edit-name">
+                <input type="submit" value="Save">
+                <a onclick="closeInput()" aria-label="Close">&#10006;</a>
+            </form>
+        </div>*@
 
 </div>
 
 <script>
 
     $(document).ready(function () {
-        var options = {};
-        options.url = "/api/adapter/list";
-        options.type = "GET";
-        options.dataType = "json";
-        options.success = function (data) {
-            data.forEach(function (element) {
-                $("#result").append("<h3 >" + element + "</h3>");
-            });
-        };
-        options.error = function () {
-            $("#msg").html("Error while calling the Web API!");
-        };
-        $.ajax(options);
+        $.ajax({
+            url: "/api/adapter/list",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                data.forEach(function (element) {
+                    var divId = `adapter${element.id}`.replace("{", "-").replace("}", "-");
+                    $("#result").append(`<h4 id="${divId}" ><b>${element.name}</b> <i>${element.description}</i> <b>${element.id}</b></h4><ul id="${divId}ul"></ul>`);
+
+                    // get IPs
+                    $.ajax({
+                        url: `/api/adapter/${element.id}/addresses`,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (data) {
+                            data.forEach(function (addressElement) {
+                                $(`#${divId}ul`).append(`<li>${addressElement}</li>`);
+                                // get IPs
+                            });
+                        },
+                        error: function () { $("#msg").append("<p>Error while calling GetAdapterAddresses Web API!<<p>>"); }
+                    });
+
+                });
+            },
+            error: function () { $("#msg").append("<p>Error while calling GetAdapterList Web API!</p>"); }
+        });
     });
 
 
