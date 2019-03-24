@@ -1,41 +1,67 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace NetManager.Api {
 	public class Program {
+
 		public static void Main( string[] args ) {
-			var isService = !( Debugger.IsAttached || args.Contains( "--console" ) );
+			bool isService = !( Debugger.IsAttached || args.Contains( "--console" ) );
 
-			var builder = BuildWebHost( args.Where( arg => arg != "--console" ).ToArray() );
+			var host = BuildWebHost( args.Where( arg => arg != "--console" ).ToArray(), isService );
 
-			if( isService ) {
-				var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-				var pathToContentRoot = Path.GetDirectoryName( pathToExe );
-				builder.UseContentRoot( pathToContentRoot );
+			try {
+
+				Log.Logger.Information( $"WebService started: {GetServerAddress( host )}. isService:{isService}" );
+
+				if( isService ){
+					host.RunAsService();
+				}
+				else
+					host.Run();
+
+			} catch( Exception e ) {
+				Log.Logger.Error( e, "Program/Main exception" );
 			}
-
-			IWebHost host = builder.Build();
-
-			if( isService ) {
-				host.RunAsService();
-			} else {
-				host.Run();
-			}			
 		}
 
-		public static IWebHostBuilder BuildWebHost( string[] args ) =>
+		private static string GetServerAddress( IWebHost host ) {
+			return string.Join( "; ", host.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses ?? Enumerable.Empty<string>() );
+		}
+
+		public static IWebHost BuildWebHost( string[] args, bool isService ) {
+
+			string contentRoot = isService
+				? Path.GetDirectoryName( Process.GetCurrentProcess().MainModule.FileName )
+				: Directory.GetCurrentDirectory();
+
+			var webHostBuilder =
 			WebHost.CreateDefaultBuilder( args )
-				//.ConfigureLogging( ( hostingContext, logging ) =>
-				//{
-				//	logging.AddEventLog();
-				//} )
+				.ConfigureLogging( ( context, builder ) => { builder.AddSerilog(); } )
 				.ConfigureAppConfiguration( ( context, config ) => {
 					// Configure the app here.
 				} )
+				.UseContentRoot(contentRoot )
 				.UseStartup<Startup>();
+
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath( contentRoot )
+				.AddJsonFile( "appsettings.json", optional: true, reloadOnChange: true )
+				.AddJsonFile( $"appsettings.{webHostBuilder.GetSetting( "environment" )}.json", optional: true )
+				.Build();
+
+			webHostBuilder.UseUrls( configuration["ServerUrl"] );
+
+			return webHostBuilder.Build();
+		}
+
 	}
 }

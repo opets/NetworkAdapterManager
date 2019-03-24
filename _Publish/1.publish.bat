@@ -1,5 +1,9 @@
 echo @off
 
+sc stop NetManagerService
+sc delete NetManagerService 
+
+
 cd ..
 
 RMDIR /S /Q _Publish\Bin
