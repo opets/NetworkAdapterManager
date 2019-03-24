@@ -1,22 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace NetManager.Api {
 	public class Program {
+
 		public static void Main( string[] args ) {
-			BuildWebHost( args ).Run();
+			bool isService = !( Debugger.IsAttached || args.Contains( "--console" ) );
+
+			try {
+				IWebHost host = BuildWebHost( args.Where( arg => arg != "--console" ).ToArray(), isService );
+
+				Log.Logger.Information( $"WebService started: {GetServerAddress( host )}. isService:{isService}" );
+
+				if( isService )
+					host.RunAsService();
+				else
+					host.Run();
+
+			} catch( Exception e ) {
+				Log.Logger.Error( e, "Program/Main exception" );
+			}
 		}
 
-		public static IWebHost BuildWebHost( string[] args ) =>
-			WebHost.CreateDefaultBuilder( args )
-				.UseStartup<Startup>()
+		private static string GetServerAddress( IWebHost host ) 
+			=> string.Join( "; ", host.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses ?? Enumerable.Empty<string>() );
+
+		public static IWebHost BuildWebHost( string[] args, bool isService ) {
+
+			string contentRoot = isService
+				? Path.GetDirectoryName( Process.GetCurrentProcess().MainModule.FileName )
+				: Directory.GetCurrentDirectory();
+
+			IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder( args );
+
+			IConfigurationRoot configuration = new ConfigurationBuilder()
+				.SetBasePath( contentRoot )
+				.AddJsonFile( "appsettings.json", true, true )
+				.AddJsonFile( $"appsettings.{webHostBuilder.GetSetting( "environment" )}.json", true )
 				.Build();
+
+			webHostBuilder
+				.ConfigureLogging( ( context, builder ) => { builder.AddSerilog(); } )
+				.ConfigureAppConfiguration(
+					( context, config ) => {
+						// Configure the app here.
+					} )
+				.UseContentRoot( contentRoot )
+				.UseUrls( configuration["ServerUrl"] )
+				.UseStartup<Startup>();
+
+			return webHostBuilder.Build();
+		}
+
 	}
 }

@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 namespace NetManager.Api.Controllers {
 
 	[Route( "api/[controller]" )]
 	public sealed class AdapterController: ControllerBase {
 
-		[HttpGet]
-		[Route( "[action]" )]
+		[HttpGet( "healthcheck" )]
 		public string HealthCheck() => "ok";
-	
+
 		// GET api/adapter/list
 		[HttpGet( "list" )]
 		public string[] GetAdapters() {
