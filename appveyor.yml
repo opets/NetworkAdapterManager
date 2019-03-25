@@ -19,7 +19,7 @@ test_script:
     nuget install OpenCover -OutputDirectory packages -Version 4.7.922
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""C:\Projects\NetworkAdapterManager\NetManager.Tests\bin\Release\netcoreapp2.1\NetManager.Tests.dll"" -noshadow -appveyor" -filter:"+[NetManager*]*" -oldStyle -output:C:\Projects\NetworkAdapterManager\opencoverCoverage.xml
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""C:\Projects\NetworkAdapterManager\NetManager.Tests\bin\Release\netcoreapp2.1\NetManager.Tests.dll"" -appveyor" -filter:"+[NetManager*]*" -oldStyle -output:C:\Projects\NetworkAdapterManager\opencoverCoverage.xml
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
