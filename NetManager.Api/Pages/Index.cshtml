@@ -5,18 +5,13 @@
 }
 
 <div class="row">
-    <h2>Info</h2>
-    <ul>
-        <li>Sample pages using ASP.NET Core Razor Pages</li>
-        <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-    </ul>
 
     <h2>Adapters</h2>
     <div id="result"></div>
 
-    <hr>
-    <div id="msg"></div>
 </div>
+<div id="msg"></div>
+
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
 
@@ -29,7 +24,9 @@
             success: function (data) {
                 RefreshAdapters();
             },
-            error: function () { $("#msg").append("<p>Error while calling AddIPAddresses Web API!<<p>>"); }
+            error: function () {
+                RefreshAdapters();
+            }
         });
     }
 
@@ -50,7 +47,7 @@
                             <h4><b>${element.name}</b> <i>${element.description}</i> <b>${element.id}</b></h4>
                             <ul id="${divId}" style="float:left;width:200px;"></ul>
                             <form action="/api/adapter/${element.id}/add" style="float:left;" method="POST" id="${divId}form">
-                                <input type="text" value="127.0.0.1" name="IpAddress" id="${divId}ip"/> 
+                                <input type="text" value="192.168.3.123" name="IpAddress" id="${divId}ip"/> 
                                 <a href="javascript:addIpClick( '${element.id}', '${divId}form'); "> Add </a>
                             </div>
                         </p>`)
