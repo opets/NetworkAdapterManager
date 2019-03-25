@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NetManager.Domain.Dto;
@@ -9,7 +10,7 @@ namespace NetManager.Tests.Integration.Services {
 	public class AdapterServiceTests {
 
 		private readonly IAdapterService m_sut;
-		private IEnumerable<AdapterInfo> m_adapters;
+		private readonly IEnumerable<AdapterInfo> m_adapters;
 
 		public AdapterServiceTests() {
 			m_sut = new AdapterService();
@@ -17,14 +18,14 @@ namespace NetManager.Tests.Integration.Services {
 		}
 
 		[Fact]
-		public void When_GGetAdapters_Pass() {
+		public void GetAdapters_Pass() {
 
 			Assert.NotNull( m_adapters );
 
 		}
 
 		[Fact]
-		public void When_GetAddresses_Pass() {
+		public void GetAddresses_Pass() {
 			if( !m_adapters.Any() ) {
 				return;
 			}
@@ -32,6 +33,31 @@ namespace NetManager.Tests.Integration.Services {
 			IEnumerable<string> addresses = m_sut.GetAddresses( m_adapters.First().Id );
 
 			Assert.NotNull( addresses );
+
+		}
+
+		[Fact]
+		public void GetAddresses_IncorrectAdapterId_KeyNotFoundException() {
+			if( !m_adapters.Any() ) {
+				return;
+			}
+
+			Assert.Throws<KeyNotFoundException>( () => m_sut.GetAddresses( "12345" ) );
+
+		}
+
+
+		[Fact]
+		public void AddAddress_IncorrectIp_FormatException() {
+
+			Assert.Throws<FormatException>( () => m_sut.AddAddress( "12345", "123" ) );
+
+		}
+
+		[Fact]
+		public void AddAddress_IncorrectAdapterId_KeyNotFoundException() {
+
+			Assert.Throws<KeyNotFoundException>( () => m_sut.AddAddress( "12345", "192.168.1.123" ) );
 
 		}
 
