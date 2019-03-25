@@ -5,52 +5,62 @@
 }
 
 <div class="row">
-    <h2>Info</h2>
-    <ul>
-        <li>Sample pages using ASP.NET Core Razor Pages</li>
-        <li>Theming using <a href="https://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-    </ul>
 
     <h2>Adapters</h2>
     <div id="result"></div>
 
-    <div id="msg"></div>
-
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    @*<div id="spoiler">
-            <h3>Edit</h3>
-            <form class="my-form">
-                <input type="hidden" id="edit-id">
-                <input type="checkbox" id="edit-isComplete">
-                <input type="text" id="edit-name">
-                <input type="submit" value="Save">
-                <a onclick="closeInput()" aria-label="Close">&#10006;</a>
-            </form>
-        </div>*@
-
 </div>
+<div id="msg"></div>
 
+<script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
 
-    $(document).ready(function () {
+    function addIpClick(adapterId, formId) {
         $.ajax({
-            url: "/api/adapter/list",
+            url: `/api/adapter/${adapterId}/add`,
+            type: "POST",
+            data: $(`#${formId}`).serialize(),
+            dataType: "json",
+            success: function (data) {
+                RefreshAdapters();
+            },
+            error: function () {
+                RefreshAdapters();
+            }
+        });
+    }
+
+    function RefreshAdapters() {
+        $("#result").html("loading...");
+
+        $.ajax({
+            url: "/api/adapter/all",
             type: "GET",
             dataType: "json",
             success: function (data) {
                 data.forEach(function (element) {
                     var divId = `adapter${element.id}`.replace("{", "-").replace("}", "-");
-                    $("#result").append(`<h4 id="${divId}" ><b>${element.name}</b> <i>${element.description}</i> <b>${element.id}</b></h4><ul id="${divId}ul"></ul>`);
+                    //$("#result").html("");
+                    $("#result")
+                        .append(`<br/>
+                        <p style="margin-bottom:40px">
+                            <h4><b>${element.name}</b> <i>${element.description}</i> <b>${element.id}</b></h4>
+                            <ul id="${divId}" style="float:left;width:200px;"></ul>
+                            <form action="/api/adapter/${element.id}/add" style="float:left;" method="POST" id="${divId}form">
+                                <input type="text" value="192.168.3.123" name="IpAddress" id="${divId}ip"/> 
+                                <a href="javascript:addIpClick( '${element.id}', '${divId}form'); "> Add </a>
+                            </div>
+                        </p>`)
+                        ;
 
-                    // get IPs
+                    // get IpAddresses
                     $.ajax({
-                        url: `/api/adapter/${element.id}/addresses`,
+                        url: `/api/adapter/${element.id}/all`,
                         type: "GET",
                         dataType: "json",
                         success: function (data) {
                             data.forEach(function (addressElement) {
-                                $(`#${divId}ul`).append(`<li>${addressElement}</li>`);
-                                // get IPs
+                                $(`#${divId}`).append(`<li>${addressElement}</li>`);
                             });
                         },
                         error: function () { $("#msg").append("<p>Error while calling GetAdapterAddresses Web API!<<p>>"); }
@@ -60,8 +70,11 @@
             },
             error: function () { $("#msg").append("<p>Error while calling GetAdapterList Web API!</p>"); }
         });
-    });
+    }
 
+    $(document).ready(function () {
+        RefreshAdapters();
+    });
 
 </script>
 
