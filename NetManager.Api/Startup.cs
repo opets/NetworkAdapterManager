@@ -22,7 +22,7 @@ namespace NetManager.Api {
 		public void ConfigureServices( IServiceCollection services ) {
 			try {
 
-				services.AddSingleton<IAdapterService, CachedAdapterService>();
+				services.AddSingleton<IAdapterService>( p => new CachedAdapterService( new AdapterService() ) );
 
 				services.AddMvc();
 
