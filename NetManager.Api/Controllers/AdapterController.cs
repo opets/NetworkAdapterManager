@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using NetManager.Api.Dto;
 using NetManager.Domain.Dto;
-using NetManager.Domain.Hardware;
+using NetManager.Domain.Services;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -12,13 +12,13 @@ namespace NetManager.Api.Controllers {
 	[Route( "api/[controller]" )]
 	public sealed class AdapterController : ControllerBase {
 
-		private AdapterService m_adapterService;
+		private readonly IAdapterService m_adapterService;
 
-		public AdapterController() {
-			m_adapterService = new AdapterService();
+		public AdapterController( IAdapterService adapterService ) {
+			m_adapterService = adapterService;
 		}
 
-		[HttpGet( "healthcheck" )]
+		[HttpGet( "[action]" )]
 		public string HealthCheck() => "ok";
 
 		// GET api/adapter/all
@@ -27,7 +27,7 @@ namespace NetManager.Api.Controllers {
 			try {
 				Log.Logger.Information( "API: GetAdapters" );
 
-				var adapters = m_adapterService.GetNetworkAdapters();
+				var adapters = m_adapterService.GetAdapters();
 
 				Log.Logger.Debug( $"API: GetAdapters.Result: {JsonConvert.SerializeObject( adapters )}" );
 
@@ -45,7 +45,7 @@ namespace NetManager.Api.Controllers {
 			try {
 				Log.Logger.Information( "API: GetAdapterAddresses" );
 
-				var adapters = m_adapterService.GetNetworkAdapterAddresses( adapterId );
+				var adapters = m_adapterService.GetAddresses( adapterId );
 
 				Log.Logger.Debug( $"API: GetAdapterAddresses.Result: {JsonConvert.SerializeObject( adapters )}" );
 
@@ -70,14 +70,11 @@ namespace NetManager.Api.Controllers {
 			try {
 				Log.Logger.Information( "API: AddIPAddress" );
 
-				string result = m_adapterService.AddNetworkAdapterAddress( adapterId, addIpAddressRequest.IpAddress );
+				string result = m_adapterService.AddAddress( adapterId, addIpAddressRequest.IpAddress );
 
 				Log.Logger.Debug( $"API: AddIPAddress.Result: {JsonConvert.SerializeObject( result )}" );
 
-				//				if(string.Equals("ok", result, StringComparison.InvariantCultureIgnoreCase ) ) {
 				return Ok( result );
-				//				}else return BadRequest( result );
-
 
 			} catch( KeyNotFoundException e ) {
 				Log.Logger.Error( e, $"API: AddIpAddress.NotFound: {e.Message}" );

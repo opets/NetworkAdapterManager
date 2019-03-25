@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace NetManager.Api.Dto {
+﻿namespace NetManager.Api.Dto {
 
 	public class AddIpAddressRequest {
 
 		public string IpAddress { get; set; }
+
 	}
 }

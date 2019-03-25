@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NetManager.Domain.Dto {
+﻿namespace NetManager.Domain.Dto {
 	public class AdapterInfo {
 
 		public AdapterInfo( string id, string name, string description ) {
@@ -12,7 +8,10 @@ namespace NetManager.Domain.Dto {
 		}
 
 		public string Id { get; }
+
 		public string Name { get; }
+
 		public string Description { get; }
+
 	}
 }
