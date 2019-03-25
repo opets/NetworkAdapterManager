@@ -9,7 +9,7 @@ using NetManager.Domain.Utils;
 
 namespace NetManager.Domain.Services {
 
-	public class AdapterService : IAdapterService {
+	public sealed class AdapterService : IAdapterService {
 
 		IEnumerable<AdapterInfo> IAdapterService.GetAdapters() 
 			=> NetworkInterface

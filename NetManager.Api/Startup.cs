@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetManager.Domain.Cache;
 using NetManager.Domain.Services;
 using Serilog;
 
@@ -21,7 +22,7 @@ namespace NetManager.Api {
 		public void ConfigureServices( IServiceCollection services ) {
 			try {
 
-				services.AddSingleton<IAdapterService, AdapterService>();
+				services.AddSingleton<IAdapterService, CachedAdapterService>();
 
 				services.AddMvc();
 

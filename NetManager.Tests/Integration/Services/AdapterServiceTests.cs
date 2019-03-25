@@ -21,7 +21,6 @@ namespace NetManager.Tests.Integration.Services {
 		public void GetAdapters_Pass() {
 
 			Assert.NotNull( m_adapters );
-
 		}
 
 		[Fact]
@@ -33,7 +32,6 @@ namespace NetManager.Tests.Integration.Services {
 			IEnumerable<string> addresses = m_sut.GetAddresses( m_adapters.First().Id );
 
 			Assert.NotNull( addresses );
-
 		}
 
 		[Fact]
@@ -43,7 +41,6 @@ namespace NetManager.Tests.Integration.Services {
 			}
 
 			Assert.Throws<KeyNotFoundException>( () => m_sut.GetAddresses( "12345" ) );
-
 		}
 
 
@@ -51,14 +48,12 @@ namespace NetManager.Tests.Integration.Services {
 		public void AddAddress_IncorrectIp_FormatException() {
 
 			Assert.Throws<FormatException>( () => m_sut.AddAddress( "12345", "XYZ" ) );
-
 		}
 
 		[Fact]
 		public void AddAddress_IncorrectAdapterId_KeyNotFoundException() {
 
 			Assert.Throws<KeyNotFoundException>( () => m_sut.AddAddress( "12345", "192.168.1.123" ) );
-
 		}
 
 
