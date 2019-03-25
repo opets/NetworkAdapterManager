@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
@@ -21,25 +22,59 @@ namespace NetManager.Domain.Hardware {
 
 		public IEnumerable<string> GetNetworkAdapterAddresses( string adapterId ) {
 
-			NetworkInterface adapter = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault( a => string.Equals( a.Id, adapterId ) );
+			NetworkInterface adapter = NetworkInterface
+				.GetAllNetworkInterfaces()
+				.FirstOrDefault( a => string.Equals( a.Id, adapterId, StringComparison.OrdinalIgnoreCase ) );
+
 			if( adapter == null ) {
-				throw new KeyNotFoundException( $"unable to found network adapter by id {adapterId}" );
+				throw new KeyNotFoundException( $"unable to found network adapter with id {adapterId}" );
 			}
 
-			var adapterProperties = adapter.GetIPProperties();
-
-			foreach( IPAddressInformation p in adapterProperties.UnicastAddresses ) {
-				if( p.Address.AddressFamily != AddressFamily.InterNetworkV6 ) {
-					yield return $"{p.Address}";
-				}
-			}
+			return adapter
+				.GetIPProperties()
+				.UnicastAddresses
+				.Where( p => p.Address.AddressFamily != AddressFamily.InterNetworkV6 )
+				.Select( p => $"{p.Address}" );
 		}
 
+		public string AddNetworkAdapterAddress( string adapterId, string addressText ) {
+			IPAddress ipAddress = ParseIpAddress( addressText );
+
+			ManagementObject adapter = FindNetworkAdapter( adapterId );
+
+			if( adapter == null ) {
+				throw new KeyNotFoundException( $"unable to found network adapter with id {adapterId}" );
+			}
+
+			var ipAddresses = adapter.Properties.OfType<PropertyData>().FirstOrDefault( p => p.Name == "IPAddress" )?.Value as string[];
+			var subnetMask = adapter.Properties.OfType<PropertyData>().FirstOrDefault( p => p.Name == "IPSubnet" )?.Value as string[];
+
+			if( ipAddresses == null ) {
+				throw new NotSupportedException("no IP Address info in adapter");
+			}
+
+			if( ipAddresses.Contains( ipAddress.ToString() ) ) {
+				throw new NotSupportedException( "IP Address already exists" );
+			}
+
+			var ipAddressesNewValue = ipAddresses.Concat( new[] { ipAddress.ToString() } ).ToArray();
+
+
+			ManagementBaseObject newIP =
+				adapter.GetMethodParameters( "EnableStatic" );
+
+			newIP["IPAddress"] = ipAddressesNewValue ;
+			newIP["SubnetMask"] =  subnetMask?.Concat( new[] { "255.255.0.0" } ).ToArray(); ;
+
+			ManagementBaseObject methodResult = adapter.InvokeMethod( "EnableStatic", newIP, null );
+
+			return methodResult?["returnValue"].ToString();
+		}
 
 		public string TestMethod() {
 			var sb = new StringBuilder();
 
-			ManagementObjectSearcher networkAdapterSearcher = new ManagementObjectSearcher( "root\\cimv2", "select * from Win32_NetworkAdapterConfiguration" );
+			ManagementObjectSearcher networkAdapterSearcher = new ManagementObjectSearcher( "root\\cimv2", "select IPAddress, SettingID from Win32_NetworkAdapterConfiguration" );
 			ManagementObjectCollection objectCollection = networkAdapterSearcher.Get();
 
 			Console.WriteLine( "There are {0} network adapaters: ", objectCollection.Count );
@@ -48,11 +83,11 @@ namespace NetManager.Domain.Hardware {
 				PropertyDataCollection networkAdapterProperties = networkAdapter.Properties;
 				foreach( PropertyData networkAdapterProperty in networkAdapterProperties ) {
 					if( networkAdapterProperty.Value != null ) {
-						Console.WriteLine( "Network adapter property name: {0}", networkAdapterProperty.Name );
-						Console.WriteLine( "Network adapter property value: {0}", networkAdapterProperty.Value );
+						sb.AppendLine( $"Network adapter property name: {networkAdapterProperty.Name}" );
+						sb.AppendLine( $"Network adapter property value: {networkAdapterProperty.Value}" );
 					}
 				}
-				Console.WriteLine( "---------------------------------------" );
+				sb.AppendLine( "---------------------------------------" );
 			}
 
 			//NetworkInterface[] adapter2s = NetworkInterface.GetAllNetworkInterfaces();
@@ -70,5 +105,27 @@ namespace NetManager.Domain.Hardware {
 			//}
 			return sb.ToString();
 		}
+
+		private IPAddress ParseIpAddress( string address )
+			=> IPAddress.TryParse( address, out IPAddress ipAddress )
+				? ipAddress
+				: throw new FormatException( "IP Address Not Valid" );
+
+		private ManagementObject FindNetworkAdapter( string adapterId ) {
+			ManagementObjectSearcher networkAdapterSearcher = new ManagementObjectSearcher(
+				"root\\cimv2",
+				$"select IPAddress, IPSubnet, SettingID from Win32_NetworkAdapterConfiguration "
+			);
+
+			return networkAdapterSearcher.Get().OfType<ManagementObject>()
+				.FirstOrDefault(
+					adapter => adapter.Properties.OfType<PropertyData>().Any(
+						networkAdapterProperty =>
+							networkAdapterProperty.Name == "SettingID"
+							&& string.Equals( networkAdapterProperty.Value?.ToString(), adapterId, StringComparison.OrdinalIgnoreCase )
+					)
+				);
+		}
+
 	}
 }
