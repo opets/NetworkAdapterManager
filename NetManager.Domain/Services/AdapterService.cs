@@ -42,11 +42,17 @@ namespace NetManager.Domain.Services {
 			IPAddress ipAddress = NetworkHelper.ParseIpAddress( addressText );
 
 			NetworkInterface adapter = NetworkHelper.FindNetworkAdapter( adapterId );
+
+			if( adapter == null ) {
+				throw new KeyNotFoundException( $"unable to find network adapter with id {adapterId}" );
+			}
+
 			UnicastIPAddressInformationCollection ipAddresses = adapter.GetIPProperties().UnicastAddresses;
 
 			if( ipAddresses == null ) {
 				throw new NotSupportedException( "no IP Address info in adapter" );
 			}
+
 
 			if( ipAddresses.Any( x => x.Address.ToString() == ipAddress.ToString() ) ) {
 				throw new NotSupportedException( "IP Address already exists" );

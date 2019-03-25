@@ -50,7 +50,7 @@ namespace NetManager.Tests.Integration.Services {
 		[Fact]
 		public void AddAddress_IncorrectIp_FormatException() {
 
-			Assert.Throws<FormatException>( () => m_sut.AddAddress( "12345", "123" ) );
+			Assert.Throws<FormatException>( () => m_sut.AddAddress( "12345", "XYZ" ) );
 
 		}
 
