@@ -1,18 +1,21 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Moq;
 using NetManager.Domain.Cache;
 using NetManager.Domain.Services;
 using Xunit;
 
 namespace NetManager.Tests.Unit.Cache {
 
-	public class CachedAdapterServiceTests {
+	public class AdapterServiceTests {
 
 		private readonly IAdapterService m_sut;
-		private Mock<IAdapterService> m_mock;
+		private readonly Mock<IAdapterService> m_mock;
+		private readonly Mock<IMemoryCache> m_cache;
 
-		public CachedAdapterServiceTests() {
+		public AdapterServiceTests() {
 			m_mock = new Mock<IAdapterService>( MockBehavior.Loose );
-			m_sut = new CachedAdapterService( m_mock.Object );
+			m_cache = new Mock<IMemoryCache>( MockBehavior.Loose );
+			m_sut = new CachedAdapterService( m_mock.Object, new MemoryCache( new MemoryCacheOptions() ) );
 		}
 
 		[Fact]
@@ -23,7 +26,6 @@ namespace NetManager.Tests.Unit.Cache {
 
 			m_mock.Verify( x => x.GetAdapters(), Times.Once );
 		}
-
 
 		[Fact]
 		public void GetAddresses_AddNew_CleanCache() {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetManager.Domain.Cache;
@@ -22,7 +23,8 @@ namespace NetManager.Api {
 		public void ConfigureServices( IServiceCollection services ) {
 			try {
 
-				services.AddSingleton<IAdapterService>( p => new CachedAdapterService( new AdapterService() ) );
+				services.AddMemoryCache();
+				services.AddSingleton<IAdapterService>( p => new CachedAdapterService( new AdapterService(), p.GetService<IMemoryCache>() ) );
 
 				services.AddMvc();
 

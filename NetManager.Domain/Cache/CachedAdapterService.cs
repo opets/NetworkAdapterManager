@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using NetManager.Domain.Dto;
 using NetManager.Domain.Services;
 
@@ -7,11 +10,14 @@ namespace NetManager.Domain.Cache {
 	public sealed class CachedAdapterService : IAdapterService {
 
 		private readonly IAdapterService m_adapterService;
-		private readonly IDictionary<string, object> m_cache = new Dictionary<string, object>();
+		private readonly IMemoryCache m_cache;
+		private readonly MemoryCacheEntryOptions m_cacheEntryOptions;
 
-
-		public CachedAdapterService( IAdapterService adapterService ) {
+		public CachedAdapterService( IAdapterService adapterService, IMemoryCache memoryCache ) {
 			m_adapterService = adapterService;
+			m_cache = memoryCache;
+			m_cacheEntryOptions = new MemoryCacheEntryOptions()
+				.SetSlidingExpiration( TimeSpan.FromMinutes( 1 ) );
 		}
 
 		IEnumerable<AdapterInfo> IAdapterService.GetAdapters() {
@@ -22,8 +28,8 @@ namespace NetManager.Domain.Cache {
 				return cachedAdapters;
 			}
 
-			var adapters = m_adapterService.GetAdapters();
-			m_cache.Add( key, adapters );
+			var adapters = m_adapterService.GetAdapters().ToArray();
+			m_cache.Set( key, adapters, m_cacheEntryOptions );
 
 			return adapters;
 		}
@@ -39,8 +45,8 @@ namespace NetManager.Domain.Cache {
 				m_cache.Remove( key );
 			}
 
-			var addresses = m_adapterService.GetAddresses( adapterId );
-			m_cache.Add( key, addresses );
+			var addresses = m_adapterService.GetAddresses( adapterId ).ToArray();
+			m_cache.Set( key, addresses, m_cacheEntryOptions );
 
 			return addresses;
 		}
@@ -48,9 +54,7 @@ namespace NetManager.Domain.Cache {
 		string IAdapterService.AddAddress( string adapterId, string addressText ) {
 
 			string addressesKey = GetAddressesKey( adapterId );
-			if( m_cache.ContainsKey( addressesKey ) ) {
-				m_cache.Remove( addressesKey );
-			}
+			m_cache.Remove( addressesKey );
 
 			return m_adapterService.AddAddress( adapterId, addressText );
 		}
